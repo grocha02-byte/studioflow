@@ -10,6 +10,7 @@ import {
 export function useDatabase() {
   const { user, usuarioData } = useAuth();
   const salaoId = usuarioData?.salaoId;
+  const empresaId = usuarioData?.empresaId || usuarioData?.salaoId;
 
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [profissionais, setProfissionais] = useState<Profissional[]>([]);
@@ -99,14 +100,14 @@ export function useDatabase() {
   const addDocData = async (col: string, data: any) => {
     if (!salaoId) return;
     const ref = collection(db, col);
-    const newDoc = await addDoc(ref, { ...data, salaoId });
+    const newDoc = await addDoc(ref, { ...data, salaoId, empresaId });
     // Update data object with generated ID if necessary
     await updateDoc(newDoc, { id: newDoc.id });
   };
 
   const setDocData = async (col: string, id: string, data: any) => {
     if (!salaoId) return;
-    await setDoc(doc(db, col, id), { ...data, salaoId, id });
+    await setDoc(doc(db, col, id), { ...data, salaoId, empresaId, id });
   };
 
   const updateDocData = async (col: string, id: string, data: any) => {

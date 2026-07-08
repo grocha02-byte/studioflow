@@ -20,7 +20,8 @@ import {
   Heart,
   Search,
   ArrowRight,
-  LogOut
+  LogOut,
+  Shield
 } from 'lucide-react';
 
 // Tipos e Helpers de Persistência
@@ -43,6 +44,9 @@ import Relatorios from './components/Relatorios';
 import ContasReceber from './components/ContasReceber';
 import Configuracoes from './components/Configuracoes';
 import NotificationCenter from './components/NotificationCenter';
+import AdminPanel from './components/AdminPanel';
+import ClientPortal from './components/ClientPortal';
+import Marketplace from './components/Marketplace';
 
 export default function App() {
   const { user, loading, usuarioData, error: authError, retry: retryAuth } = useAuth();
@@ -286,6 +290,7 @@ const getGlobalSearchResults = () => {
 
   const ALL_MENU_ITEMS = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'admin', label: 'Admin Plataforma', icon: Shield },
     { id: 'agenda', label: 'Agenda & Caixa', icon: Calendar },
     { id: 'clientes', label: 'Clientes', icon: Users },
     { id: 'profissionais', label: 'Profissionais', icon: UserCheck },
@@ -297,8 +302,9 @@ const getGlobalSearchResults = () => {
   ];
 
   const MENU_ITEMS = ALL_MENU_ITEMS.filter(item => {
-    if (isAdminOrProp) return true;
-    if (isGerente) return item.id !== 'configuracoes';
+    if (role === 'admin') return true;
+    if (isAdminOrProp) return item.id !== 'admin';
+    if (isGerente) return item.id !== 'configuracoes' && item.id !== 'admin';
     if (isRecepcao) return ['dashboard', 'agenda', 'clientes', 'profissionais', 'servicos', 'estoque', 'contas_receber'].includes(item.id);
     if (isProfissional) return ['dashboard', 'agenda', 'clientes', 'servicos'].includes(item.id);
     return false;
@@ -425,6 +431,12 @@ const getGlobalSearchResults = () => {
             onResetData={handleResetDatabase}
           />
         );
+      case 'admin':
+        return <AdminPanel />;
+      case 'cliente':
+        return <ClientPortal />;
+      case 'marketplace':
+        return <Marketplace />;
       default:
         return <div className="text-center py-10">Componente não encontrado</div>;
     }

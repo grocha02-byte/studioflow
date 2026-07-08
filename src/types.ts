@@ -147,6 +147,13 @@ export type SegmentoNegocio = 'Salão de Beleza' | 'Barbearia' | 'Clínica de Es
 
 export type UserRole = 'admin' | 'recepcionista' | 'profissional' | 'gerente';
 
+export interface Empresa {
+  id: string;
+  nome: string;
+  status: 'pendente' | 'ativo' | 'bloqueado';
+  dataCadastro: string;
+}
+
 export interface Usuario {
   id: string;
   uid: string;
@@ -154,8 +161,9 @@ export interface Usuario {
   email: string;
   role: UserRole;
   salaoId: string;
+  empresaId: string; // Adicionado para compatibilidade multi-tenant
   ativo: boolean;
-  profissionalId?: string; // se for um profissional, linka com o cadastro dele
+  profissionalId?: string; 
 }
 
 

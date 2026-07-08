@@ -47,6 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: firebaseUser.email || '',
             role: 'proprietario',
             salaoId,
+            empresaId: salaoId,
             ativo: true
           };
           
@@ -54,6 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           await setDoc(doc(db, 'configuracoes', salaoId), {
             salaoId,
+            empresaId: salaoId, // Compatibilidade
             nomeSalao: 'Meu Salão (Auto)',
             theme: 'light',
             primaryColor: '#D8B780',
@@ -65,7 +67,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           if (isMounted) setUsuarioData({ id: firebaseUser.uid, ...newUser } as Usuario);
         } else {
-          if (isMounted) setUsuarioData({ id: userDoc.id, ...userDoc.data() } as Usuario);
+          const data = userDoc.data();
+          if (isMounted) setUsuarioData({ id: userDoc.id, ...data, empresaId: data.empresaId || data.salaoId } as Usuario);
         }
 
         // Configurar listener após garantir que existe

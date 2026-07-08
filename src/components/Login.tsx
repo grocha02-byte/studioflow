@@ -30,6 +30,7 @@ export default function Login() {
       const userDoc = await getDoc(userDocRef);
       
       if (!userDoc.exists()) {
+        const empresaId = `empresa_${Date.now()}`;
         const salaoId = `salao_${Date.now()}`;
         
         const newUser: Omit<Usuario, 'id'> = {
@@ -38,12 +39,14 @@ export default function Login() {
           email: result.user.email || '',
           role: 'admin',
           salaoId,
+          empresaId,
           ativo: true
         };
         await setDoc(userDocRef, newUser);
         
         await setDoc(doc(db, 'configuracoes', salaoId), {
           salaoId,
+          empresaId,
           nomeSalao: 'Meu Salão',
           theme: 'light',
           primaryColor: '#D8B780',
@@ -72,6 +75,7 @@ export default function Login() {
           throw new Error('Preencha todos os campos.');
         }
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const empresaId = `empresa_${Date.now()}`;
         const salaoId = `salao_${Date.now()}`;
         
         // Crate user doc
@@ -81,6 +85,7 @@ export default function Login() {
           email,
           role: 'admin',
           salaoId,
+          empresaId,
           ativo: true
         };
         await setDoc(doc(db, 'usuarios', userCredential.user.uid), newUser);
@@ -88,6 +93,7 @@ export default function Login() {
         // Initialize default configuracao
         await setDoc(doc(db, 'configuracoes', salaoId), {
           salaoId,
+          empresaId,
           nomeSalao: salaoNome,
           theme: 'light',
           primaryColor: '#D8B780',

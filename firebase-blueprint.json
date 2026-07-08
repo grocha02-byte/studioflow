@@ -1,0 +1,114 @@
+{
+  "__blueprint_version__": "1.0.0",
+  "collections": {
+    "users": {
+      "rules": [
+        "read: if request.auth != null",
+        "write: if request.auth != null"
+      ],
+      "schema": {
+        "email": "string",
+        "salaoId": "string",
+        "role": "string",
+        "nome": "string"
+      }
+    },
+    "configuracoes": {
+      "rules": [
+        "read: if request.auth != null",
+        "write: if request.auth != null"
+      ],
+      "schema": {
+        "salaoId": "string",
+        "nomeSalao": "string"
+      }
+    },
+    "clientes": {
+      "rules": [
+        "read: if request.auth != null",
+        "write: if request.auth != null"
+      ],
+      "schema": {
+        "salaoId": "string",
+        "nome": "string"
+      }
+    },
+    "profissionais": {
+      "rules": [
+        "read: if request.auth != null",
+        "write: if request.auth != null"
+      ],
+      "schema": {
+        "salaoId": "string",
+        "nome": "string"
+      }
+    },
+    "servicos": {
+      "rules": [
+        "read: if request.auth != null",
+        "write: if request.auth != null"
+      ],
+      "schema": {
+        "salaoId": "string",
+        "nome": "string"
+      }
+    },
+    "produtos": {
+      "rules": [
+        "read: if request.auth != null",
+        "write: if request.auth != null"
+      ],
+      "schema": {
+        "salaoId": "string",
+        "nome": "string"
+      }
+    },
+    "agendamentos": {
+      "rules": [
+        "read: if request.auth != null",
+        "write: if request.auth != null"
+      ],
+      "schema": {
+        "salaoId": "string",
+        "clienteId": "string",
+        "profissionalId": "string"
+      }
+    },
+    "caixa_transacoes": {
+      "rules": [
+        "read: if request.auth != null",
+        "write: if request.auth != null"
+      ],
+      "schema": {
+        "salaoId": "string"
+      }
+    },
+    "caixa_status": {
+      "rules": [
+        "read: if request.auth != null",
+        "write: if request.auth != null"
+      ],
+      "schema": {
+        "salaoId": "string"
+      }
+    },
+    "movimentacoes": {
+      "rules": [
+        "read: if request.auth != null",
+        "write: if request.auth != null"
+      ],
+      "schema": {
+        "salaoId": "string"
+      }
+    },
+    "notificacoes": {
+      "rules": [
+        "read: if request.auth != null",
+        "write: if request.auth != null"
+      ],
+      "schema": {
+        "salaoId": "string"
+      }
+    }
+  }
+}

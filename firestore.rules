@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function getUserData() { 
+      let userDoc = get(/databases/$(database)/documents/usuarios/$(request.auth.uid));
+      return userDoc != null ? userDoc.data : null;
+    }
+    function checkRole(allowedRolesMap) { let u = getUserData(); return u != null && u.role in allowedRolesMap; }
+    function isSameSalao(salaoIdCheck) { let u = getUserData(); return u != null && u.salaoId == String(salaoIdCheck); }
+    
+    function isOwnerAdmin() { let u = getUserData(); return u != null && (u.role == 'admin' || u.role == 'proprietario'); }
+    function isStaff() { let u = getUserData(); return u != null && (u.role == 'admin' || u.role == 'proprietario' || u.role == 'recepcionista'); }
+
+    function canReadOwn() { 
+      return isSignedIn() && (resource == null || !('salaoId' in resource.data) || isSameSalao(resource.data.salaoId)); 
+    }
+    function canCreateOwn() { return isSignedIn() && isSameSalao(request.resource.data.salaoId); }
+    function canUpdateOwn() { return isSignedIn() && isSameSalao(resource.data.salaoId) && isSameSalao(request.resource.data.salaoId); }
+    function canDeleteOwn() { return isSignedIn() && isSameSalao(resource.data.salaoId); }
+
+    match /usuarios/{userId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /clientes/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn(); allow update: if canUpdateOwn(); allow delete: if canDeleteOwn(); }
+    match /agendamentos/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn(); allow update: if canUpdateOwn(); allow delete: if canDeleteOwn(); }
+    match /notificacoes/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn(); allow update: if canUpdateOwn(); allow delete: if canDeleteOwn(); }
+
+    match /profissionais/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn() && isOwnerAdmin(); allow update: if canUpdateOwn() && isOwnerAdmin(); allow delete: if canDeleteOwn() && isOwnerAdmin(); }
+    match /servicos/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn() && isOwnerAdmin(); allow update: if canUpdateOwn() && isOwnerAdmin(); allow delete: if canDeleteOwn() && isOwnerAdmin(); }
+    
+    match /configuracoes/{id} { 
+      allow read: if isSignedIn() && isSameSalao(id); 
+      allow create: if canCreateOwn() && isOwnerAdmin(); 
+      allow update: if canUpdateOwn() && isOwnerAdmin();
+      allow delete: if canDeleteOwn() && isOwnerAdmin(); 
+    }
+
+    match /produtos/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn() && isStaff(); allow update: if canUpdateOwn() && isStaff(); allow delete: if canDeleteOwn() && isStaff(); }
+    match /movimentacoes/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn() && isStaff(); allow update: if canUpdateOwn() && isStaff(); allow delete: if canDeleteOwn() && isStaff(); }
+    match /caixa_transacoes/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn() && isStaff(); allow update: if canUpdateOwn() && isStaff(); allow delete: if canDeleteOwn() && isStaff(); }
+    match /contas_receber/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn() && isStaff(); allow update: if canUpdateOwn() && isStaff(); allow delete: if canDeleteOwn() && isStaff(); }
+    
+    match /caixa_status/{id} { 
+      allow read: if isSignedIn() && isSameSalao(id); 
+      allow create: if canCreateOwn() && isStaff(); 
+      allow update: if canUpdateOwn() && isStaff();
+      allow delete: if canDeleteOwn() && isStaff(); 
+    }
+  }
+}

@@ -41,13 +41,17 @@ service cloud.firestore {
     match /produtos/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn() && isStaff(); allow update: if canUpdateOwn() && isStaff(); allow delete: if canDeleteOwn() && isStaff(); }
     match /movimentacoes/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn() && isStaff(); allow update: if canUpdateOwn() && isStaff(); allow delete: if canDeleteOwn() && isStaff(); }
     match /caixa_transacoes/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn() && isStaff(); allow update: if canUpdateOwn() && isStaff(); allow delete: if canDeleteOwn() && isStaff(); }
-    match /contas_receber/{id} { allow read: if canReadOwn(); allow create: if canCreateOwn() && isStaff(); allow update: if canUpdateOwn() && isStaff(); allow delete: if canDeleteOwn() && isStaff(); }
-    
     match /caixa_status/{id} { 
-      allow read: if isSignedIn() && isSameSalao(id); 
-      allow create: if canCreateOwn() && isStaff(); 
+      allow read: if isSignedIn() && isSameSalao(id);
+      allow create: if canCreateOwn() && isStaff() && request.resource.data.salaoId == id;
+      allow update: if canUpdateOwn() && isStaff() && request.resource.data.salaoId == id;
+      allow delete: if canDeleteOwn() && isStaff();
+    }
+    match /contas_receber/{id} { 
+      allow read: if canReadOwn();
+      allow create: if canCreateOwn() && isStaff();
       allow update: if canUpdateOwn() && isStaff();
-      allow delete: if canDeleteOwn() && isStaff(); 
+      allow delete: if canDeleteOwn() && isStaff();
     }
   }
 }

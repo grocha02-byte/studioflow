@@ -23,7 +23,7 @@ import {
   Award,
   Coffee
 } from 'lucide-react';
-import { Cliente, Profissional, Servico, Agendamento, Produto, CaixaTransacao, CaixaStatus, Configuracao } from '../types';
+import { Cliente, Profissional, Servico, Agendamento, Produto, CaixaTransacao, CaixaStatus, Configuracao, ContaReceber } from '../types';
 
 interface DashboardProps {
   clientes: Cliente[];
@@ -31,6 +31,7 @@ interface DashboardProps {
   servicos: Servico[];
   agendamentos: Agendamento[];
   produtos: Produto[];
+  contasReceber: ContaReceber[];
   caixaTransacoes?: CaixaTransacao[];
   caixaStatus?: CaixaStatus;
   configuracao: Configuracao;
@@ -43,7 +44,8 @@ export default function Dashboard({
   profissionais, 
   servicos, 
   agendamentos, 
-  produtos, 
+  produtos,
+  contasReceber,
   caixaTransacoes = [],
   caixaStatus = { aberto: false, saldoAbertura: 0 },
   configuracao,
@@ -54,7 +56,15 @@ export default function Dashboard({
   // Data base de hoje
   const todayStr = '2026-07-07'; 
   const currentMonthStr = '2026-07';
-  const previousMonthStr = '2026-06';
+  
+  // Lógica das Contas a Receber
+  const totalAReceber = contasReceber.filter(c => c.status === 'Pendente').reduce((acc, c) => acc + c.valor, 0);
+  const aReceberHoje = contasReceber.filter(c => c.status === 'Pendente' && c.dataVencimento === todayStr).reduce((acc, c) => acc + c.valor, 0);
+  const aReceberMes = contasReceber.filter(c => c.status === 'Pendente' && c.dataVencimento.startsWith(currentMonthStr)).reduce((acc, c) => acc + c.valor, 0);
+  const parcelasVencidas = contasReceber.filter(c => c.status === 'Pendente' && c.dataVencimento < todayStr).reduce((acc, c) => acc + c.valor, 0);
+  const valorRecebidoMes = contasReceber.filter(c => c.status === 'Pago' && c.dataPagamento?.startsWith(currentMonthStr)).reduce((acc, c) => acc + c.valor, 0);
+
+  // ... (existing logic remains)
 
   // 1. FILTRAR DADOS DE HOJE
   const agendamentosDeHoje = agendamentos.filter(a => a.data === todayStr);
@@ -385,6 +395,24 @@ export default function Dashboard({
         </div>
 
       </div>
+
+      {/* 2.5 CONTAS A RECEBER PANELS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="bg-white p-6 rounded-2xl border border-gold-100 shadow-xs">
+          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total a Receber</p>
+          <h3 className="text-xl font-bold text-gray-800 mt-2">{formatCurrency(totalAReceber)}</h3>
+        </div>
+        <div className="bg-white p-6 rounded-2xl border border-gold-100 shadow-xs">
+          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Vencendo Hoje</p>
+          <h3 className="text-xl font-bold text-gold-600 mt-2">{formatCurrency(aReceberHoje)}</h3>
+        </div>
+        <div className="bg-white p-6 rounded-2xl border border-gold-100 shadow-xs">
+          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Vencidas</p>
+          <h3 className="text-xl font-bold text-red-600 mt-2">{formatCurrency(parcelasVencidas)}</h3>
+        </div>
+      </div>
+
+
 
       {/* 3. CHARTS GRID (7 DAYS TIMELINE AND PAYMENT MEIOS) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

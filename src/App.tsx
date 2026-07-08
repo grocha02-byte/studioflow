@@ -16,6 +16,7 @@ import {
   Package, 
   Settings, 
   LayoutDashboard,
+  FileText,
   Heart,
   Search,
   ArrowRight,
@@ -313,6 +314,7 @@ const getGlobalSearchResults = () => {
             servicos={servicos}
             agendamentos={agendamentos}
             produtos={produtos}
+            contasReceber={dbStore.contasReceber || []}
             caixaTransacoes={caixaTransacoes}
             caixaStatus={caixaStatus}
             configuracao={configuracao}
